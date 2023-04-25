@@ -1,0 +1,80 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - development
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  REGION: ${{ secrets.GKE_REGION }}
+  IMAGE_NAME: kudremukh-operator #Rule: same as repository name
+  IMAGE_TAG: development #${{ github.sha }} #Rule: same as branch name
+  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }} # reqd for update docker image to ggl Artifact Repository
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    # Authentication for gcloud Artifact Registry via credentials json
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+    # Setup gcloud
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ env.PROJECT_ID }}
+        service_account_key: ${{ env.GCP_SA_KEY }}
+        export_default_credentials: true
+
+    - name: Configure Docker
+      run: |
+        gcloud auth configure-docker
+    
+    - name: Configure Artifact Registry
+      run: |
+        gcloud auth configure-docker \
+        ${{ env.REGION }}-docker.pkg.dev
+
+    - name: Build and push Docker
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+  commit:
+    name: Commit to Reconciliation repository
+    needs: [build-and-push]
+    runs-on: ubuntu-latest
+    if: ${{ needs.build-and-push.result == 'success' }}
+    steps:
+      - name: Echo the shasum
+        id: echo-sha
+        run: |
+          echo "github_sha: " $GITHUB_SHA 
+          echo "::set-output name=sha_short::${GITHUB_SHA::7}"
+      - name: Clone the manifests repo
+        run: |
+          git config --global user.email ${{ secrets.GH_USER_EMAIL }}
+          git config --global user.name ${{ secrets.GH_USER_NAME }}
+          git clone -b develop https://.:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@github.com/sevenport-labs/manifests-index.git
+          echo "Cloning success"
+      - name: Substitute placeholder with github sha
+        run: |
+          sed -i "s/value.*$/value\: $GITHUB_SHA/"  manifests-index/infra/k8s/${{ env.IMAGE_NAME }}/overlays/${{ env.IMAGE_TAG }}/build-version-patch.yaml
+      - name: Commit
+        run: |
+          cd manifests-index && git add . && git commit -m '${{ github.event.repository.name }} updated with ${{ steps.echo-sha.outputs.sha_short }} on branch ${{ github.head_ref }}' && git push origin develop
+
