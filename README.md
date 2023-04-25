@@ -1,8 +1,16 @@
 # kudremukh-operator
-// TODO(user): Add simple overview of use/purpose
+-   Listens for new pods
+-   Annotates those pods with a timestamp
+-   Logs the pod and timestamp to stdout
+-   Is deployed via a Helm chart
+
+**Stretch Goals**
+-   Only respond to pods with a particular annotation (e.g. timestamp=true)
+-   Only respond to pods in namespaces with a particular annotation (e.g. timestamp=true)
+-   Implement leader election
 
 ## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
+a simple operator
 
 ## Getting Started
 You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing, or run against a remote cluster.
@@ -42,7 +50,7 @@ make undeploy
 ```
 
 ## Contributing
-// TODO(user): Add detailed information on how you would like others to contribute to this project
+
 
 ### How it works
 This project aims to follow the Kubernetes [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/).
