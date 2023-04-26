@@ -17,15 +17,6 @@ resources:
   controller: true
   domain: my.domain
   group: sevenport.io
-  kind: Kudremukh
-  path: github.com/sevenport-labs/kudremukh-operator/api/v1alpha1
-  version: v1alpha1
-- api:
-    crdVersion: v1
-    namespaced: true
-  controller: true
-  domain: my.domain
-  group: sevenport.io
   kind: Pod
   path: github.com/sevenport-labs/kudremukh-operator/api/v1alpha1
   version: v1alpha1

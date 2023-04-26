@@ -1,5 +1,4 @@
 ## Append samples of your project ##
 resources:
-- sevenport.io_v1alpha1_kudremukh.yaml
 - sevenport.io_v1alpha1_pod.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples
