@@ -20,7 +20,7 @@ Before developing, make sure you have the following prerequisites:
 
 - **Kubernetes cluster**: You need a running Kubernetes cluster with kubectl configured to access it.
 - **Operator SDK**: You need to have the Operator SDK installed on your local machine for building and deploying the operator.
-- **CRD installed**: The CRD for MyResource should be installed in your cluster before deploying My Operator. You can install it using the kubectl command or by applying the CRD manifest file provided in this repository.
+- **CRD installed**: The CRD  should be installed in your cluster before deploying the operator. You can install it using the kubectl command or by applying the CRD manifest file provided in this repository.
 
 ### Setup
 1. clone the repository 
