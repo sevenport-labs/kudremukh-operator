@@ -18,6 +18,7 @@ package controller
 
 import (
 	"context"
+	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -47,9 +48,30 @@ type PodReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.14.1/pkg/reconcile
 func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	// Get the Pod object from the request
+	pod := &sevenportiov1alpha1.Pod{}
+	if err := r.Get(ctx, req.NamespacedName, pod); err != nil {
+		// Return an error if the Pod object cannot be retrieved
+		log.Error(err, "Failed to get Pod")
+		return ctrl.Result{}, err
+	}
+
+	// Check if the Pod has the timestamp annotation
+	if pod.Annotations == nil {
+		pod.Annotations = map[string]string{}
+	}
+	if _, ok := pod.Annotations["timestamp"]; !ok {
+		// Add the timestamp annotation to the Pod
+		pod.Annotations["timestamp"] = time.Now().String()
+		if err := r.Update(ctx, pod); err != nil {
+			// Return an error if the Pod cannot be updated
+			log.Error(err, "Failed to update Pod with timestamp annotation")
+			return ctrl.Result{}, err
+		}
+		log.Info("Added timestamp annotation to Pod", "pod", pod.Name)
+	}
 
 	return ctrl.Result{}, nil
 }
