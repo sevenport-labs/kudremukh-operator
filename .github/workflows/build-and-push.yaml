@@ -55,7 +55,7 @@ jobs:
         tags: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
   commit:
-    name: Commit to Reconciliation repository
+    name: Commit to Helm Repo
     needs: [build-and-push]
     runs-on: ubuntu-latest
     if: ${{ needs.build-and-push.result == 'success' }}
@@ -65,16 +65,12 @@ jobs:
         run: |
           echo "github_sha: " $GITHUB_SHA 
           echo "::set-output name=sha_short::${GITHUB_SHA::7}"
-      - name: Clone the manifests repo
+      - name: Clone the Helm repo
         run: |
           git config --global user.email ${{ secrets.GH_USER_EMAIL }}
           git config --global user.name ${{ secrets.GH_USER_NAME }}
-          git clone -b develop https://.:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@github.com/sevenport-labs/manifests-index.git
+          git clone -b development https://.:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@github.com/sevenport-labs/helm-charts.git
           echo "Cloning success"
-      - name: Substitute placeholder with github sha
-        run: |
-          sed -i "s/value.*$/value\: $GITHUB_SHA/"  manifests-index/infra/k8s/${{ env.IMAGE_NAME }}/overlays/${{ env.IMAGE_TAG }}/build-version-patch.yaml
-      - name: Commit
-        run: |
-          cd manifests-index && git add . && git commit -m '${{ github.event.repository.name }} updated with ${{ steps.echo-sha.outputs.sha_short }} on branch ${{ github.head_ref }}' && git push origin develop
-
+      # - name: Update the Helm repo in same named branch?
+      #   run: |
+      
