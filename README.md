@@ -13,7 +13,7 @@
 -   Implement leader election
 
 
-## Developer Section
+## Quick Setup for Development
 
 ### Prerequisites
 Before developing, make sure you have the following prerequisites:
@@ -22,7 +22,7 @@ Before developing, make sure you have the following prerequisites:
 - **Operator SDK**: You need to have the Operator SDK installed on your local machine for building and deploying the operator.
 - **CRD installed**: The CRD for MyResource should be installed in your cluster before deploying My Operator. You can install it using the kubectl command or by applying the CRD manifest file provided in this repository.
 
-### Quick Setup
+### Setup
 1. clone the repository 
 ```
 git clone https://github.com/sevenport-labs/kudremukh-operator.git
@@ -41,11 +41,18 @@ helm install kudremukh-operator sevenport-repo/helm-charts -n <namespace>
 ```
 
 
-### Getting Started with BoilerPlate
+### Delete the operator
+
+```
+helm delete kudremukh-operator
+```
+
+
+## Getting Started (Long Read)
 You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing, or run against a remote cluster.
 **Note:** Your controller will automatically use the current context in your kubeconfig file (i.e. whatever cluster `kubectl cluster-info` shows).
 
-#### Running on the cluster
+### Running on the cluster
 1. Install Instances of Custom Resources:
 
 ```sh
@@ -64,14 +71,14 @@ make docker-build docker-push IMG=<some-registry>/kudremukh-operator:tag
 make deploy IMG=<some-registry>/kudremukh-operator:tag
 ```
 
-#### Uninstall CRDs
+### Uninstall CRDs
 To delete the CRDs from the cluster:
 
 ```sh
 make uninstall
 ```
 
-#### Undeploy controller
+### Undeploy controller
 UnDeploy the controller from the cluster:
 
 ```sh
