@@ -28,7 +28,7 @@ Before developing, make sure you have the following prerequisites:
 git clone https://github.com/sevenport-labs/kudremukh-operator.git
 ```
 2. make changes
-3. make manifests
+3. make manifests, refer (Modifying API Definitions)
 4. commit, if no errors
 5. Github workflow will build and push the docker image to GAR.
 
