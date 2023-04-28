@@ -70,7 +70,7 @@ spec:
         - /manager
         args:
         - --leader-elect
-        image: controller:latest
+        image: us-east1-docker.pkg.dev/labs-36596/kudremukh-operator/kudremukh-operator:development
         name: manager
         securityContext:
           allowPrivilegeEscalation: false
